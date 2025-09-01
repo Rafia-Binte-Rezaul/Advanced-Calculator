@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calculator Pro</title>
+  <link rel="stylesheet" href="calci.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- top bar: brand + solar -->
+    <div class="topbar">
+      <div class="brand">myTech</div>
+      <div class="solar" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+
+    <!-- display -->
+    <div class="display">
+      <input id="screen" type="text" inputmode="decimal" placeholder="0" />
+    </div>
+
+    <!-- keypad -->
+    <div class="btns">
+      <button id="ce" class="key accent" type="button" onclick="backspc()">CE</button>
+      <button class="key fn" type="button" onclick="fact()">x!</button>
+      <button class="key btn" type="button">(</button>
+      <button class="key btn" type="button">)</button>
+      <button class="key op btn" type="button">%</button>
+      <button id="ac" class="key accent" type="button" onclick="screen.value=''">AC</button>
+
+      <button class="key fn" type="button" onclick="sin()">sin</button>
+      <button class="key fn" type="button" onclick="pi()">pi</button>
+      <button class="key num btn" type="button">7</button>
+      <button class="key num btn" type="button">8</button>
+      <button class="key num btn" type="button">9</button>
+      <button class="key op btn" type="button">/</button>
+
+      <button class="key fn" type="button" onclick="cos()">cos</button>
+      <button class="key fn" type="button" onclick="log10()">log</button>
+      <button class="key num btn" type="button">4</button>
+      <button class="key num btn" type="button">5</button>
+      <button class="key num btn" type="button">6</button>
+      <button class="key op btn" type="button">*</button>
+
+      <button class="key fn" type="button" onclick="tan()">tan</button>
+      <button class="key fn" type="button" onclick="sqrt()">root</button>
+      <button class="key num btn" type="button">1</button>
+      <button class="key num btn" type="button">2</button>
+      <button class="key num btn" type="button">3</button>
+      <button class="key op btn" type="button">-</button>
+
+      <button class="key fn" type="button" onclick="e()">e</button>
+      <button class="key fn" type="button" onclick="pow()">x<span class="sup">y</span></button>
+      <button class="key num btn" type="button">0</button>
+      <button class="key num btn" type="button">.</button>
+      <button id="eval" class="key equals" type="button" onclick="evaluateExpr()">=</button>
+      <button class="key op btn" type="button">+</button>
+    </div>
+  </div>
+
+  <!-- your working JS stays the same -->
+  <script>
+    const screen = document.querySelector('#screen');
+    const btns = document.querySelectorAll('.btn');
+
+    btns.forEach((b) => {
+      b.addEventListener('click', (e) => {
+        let t = e.target.innerText.trim();
+        if (t === 'x') t = '*';
+        screen.value += t;
+      });
+    });
+
+    const num = () => {
+      const v = parseFloat(screen.value);
+      return isNaN(v) ? 0 : v;
+    };
+
+    function sin(){ screen.value = Math.sin(num()); }
+    function cos(){ screen.value = Math.cos(num()); }
+    function tan(){ screen.value = Math.tan(num()); }
+    function sqrt(){ screen.value = Math.sqrt(num()); }
+
+    function log10(){
+      const v = num();
+      screen.value = (Math.log10 ? Math.log10(v) : Math.log(v) / Math.LN10);
+    }
+
+    function pi(){ screen.value = Math.PI; }
+    function e(){ screen.value = Math.E; }
+
+    function pow(){
+      const base = num();
+      let exponent = prompt('Enter exponent (y):', '2');
+      if (exponent === null) return;
+      exponent = parseFloat(exponent);
+      if (isNaN(exponent)) { screen.value = 'Error'; return; }
+      screen.value = Math.pow(base, exponent);
+    }
+
+    function fact(){
+      const n = parseInt(num(), 10);
+      if (n < 0 || n > 170) { screen.value = 'Error'; return; }
+      let f = 1; for (let i=2;i<=n;i++) f*=i;
+      screen.value = f;
+    }
+
+    function backspc(){ screen.value = screen.value.slice(0,-1); }
+
+    function evaluateExpr(){
+      try{
+        const expr = screen.value.replace(/x/gi, '*');
+        if (!/^[\d\s+\-*/().%]*$/.test(expr)) throw new Error();
+        const result = Function(`"use strict";return(${expr});`)();
+        screen.value = result;
+      }catch{ screen.value = 'Error'; }
+    }
+  </script>
+</body>
+</html>
